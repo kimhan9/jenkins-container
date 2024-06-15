@@ -1,0 +1,67 @@
+pipeline {
+  agent any
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+  stages {
+    stage('Checkout from Git') {
+            steps {
+                git branch: 'main', url: 'https://github.com/kimhan9/jenkins-container.git'
+            }
+    }
+
+    stage('Sonarqube Analysis') {
+        steps {
+            withSonarQubeEnv('sonar-server') {
+                sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=flaskdemo \
+                -Dsonar.projectKey=flaskdemo'''
+            }
+        }
+    }
+
+    stage('quality gate') {
+        steps {
+            script {
+                waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+            }
+        }
+    }
+
+    /*
+    stage('snyk') {
+      steps {
+        snykSecurity(
+          snykInstallation: 'snyk',
+          snykTokenId: 'synk-token',
+          projectName: 'flaskdemo'
+        )
+      }
+    }
+    */
+
+    stage('Docker build'){
+        steps{
+            script{
+              dir('jenkins-kubernetes') {
+                  withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                     sh "cd flaskdemo"
+                     sh "docker build -t flaskdemo ."
+                     sh "docker tag flaskdemo conandor/flaskdemo:${env.BUILD_NUMBER} "
+                     sh "docker push conandor/flaskdemo:${env.BUILD_NUMBER} "
+                  }
+              }
+            }
+        }
+    }
+
+    stage('Trigger ManifestUpdate') {
+      steps {
+        script {
+          echo "triggering updatemanifestjob"
+          build job: 'flaskdemo-manifest', parameters: [string(name: 'BUILD_NUMBER', value: env.BUILD_NUMBER)]
+        }
+      }
+    }
+
+  }
+}
