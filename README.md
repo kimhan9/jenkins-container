@@ -35,3 +35,11 @@ docker run -d --name my-jenkins -p 8080:8080 -p 50000:50000 \
 ## Jenkinsfile
 
 Add to pipeline to test.
+
+# Sonarqube
+
+## Run Sonarqube in local machine
+`docker run -d --name my-sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest`
+sonarqube:lts-community
+
+[Documentation](https://docs.sonarsource.com/sonarqube/latest/try-out-sonarqube/)

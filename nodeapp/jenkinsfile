@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs 'node18'
+    }
+
+    stages {
+        stage('Github') {
+            git branch: 'main', credentialsId: 'github', url: 'https://github.com/kimhan9/jenkins-container.git'
+        }
+        stage('Unit Test'){
+			steps {
+				sh 'npm test'
+				sh 'npm install'		
+			}
+		}
+    }
+}
