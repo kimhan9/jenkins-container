@@ -13,8 +13,10 @@ pipeline {
         }
         stage('Unit Test'){
 			steps {
-				sh 'npm test'
-				sh 'npm install'		
+                dir('nodeapp') {
+				    sh 'npm test'
+				    sh 'npm install'
+                }
 			}
 		}
     }
