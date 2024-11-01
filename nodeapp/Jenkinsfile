@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Github') {
             steps {
-                git branch: 'main', credentialsId: 'github', url: 'https://github.com/kimhan9/jenkins-container.git'
+                credentialsId: 'github', url: 'https://github.com/kimhan9/jenkins-container.git', git branch: 'main'    
             }
         }
 
@@ -60,7 +60,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker', url: 'https://registry.hub.docker.com') {
                     sh "docker tag nodeapp conandor/nodeapp:${env.BUILD_NUMBER}"
                     sh "docker push conandor/nodeapp:${env.BUILD_NUMBER}"
                 }
