@@ -6,12 +6,8 @@ USER root
 
 # Install Jenkins
 RUN apt-get update && \
-    apt-get install -y apt-transport-https \
-                       ca-certificates \
-                       curl \
-                       gnupg2 \
-                       software-properties-common && \
-    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
     add-apt-repository \
       "deb [arch=arm64] https://download.docker.com/linux/debian \
       $(lsb_release -cs) \
@@ -37,7 +33,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 # Install Ansible
 RUN pip install --upgrade pip cffi && \
     pip install ansible && \
-    pip install mitogen ansible-lint jmespath && \
+    pip install  ansible-lint jmespath mitogen && \
     pip install --upgrade pywinrm
 
 # Install Trivy
