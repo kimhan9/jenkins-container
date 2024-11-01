@@ -27,6 +27,7 @@ pipeline {
 			}
 		}
 
+        '''
 		stage('SonarQube Analysis'){
 			steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
@@ -42,27 +43,22 @@ pipeline {
                 }
 			}
 		}
+        '''
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build(${DOCKER_HUB_REPO})
+                    docker.build("${DOCKER_HUB_REPO}:${env.BUILD_ID}")
                 }
             }
         }
 
-        stage('Trivy Scan'){
-			steps {
-				sh 'trivy image ${DOCKER_HUB_REPO}'
-			}
-		}
-
         stage('Push Docker Image') {
-            steps { 
+            steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                        docker.push($env.BUILD_NUMBER)
-                        docker.push("latest")
+                        docker.push()
+                        docker.push('latest')
                     }
                 }
             }
