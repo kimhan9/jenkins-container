@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Github') {
             steps {
-                credentialsId: 'github', url: 'https://github.com/kimhan9/jenkins-container.git', git branch: 'main'    
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/kimhan9/jenkins-container.git'
             }
         }
 
