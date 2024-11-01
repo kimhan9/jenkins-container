@@ -38,8 +38,16 @@ Add to pipeline to test.
 
 # Sonarqube
 
-## Run Sonarqube in local machine
+* Run Sonarqube in local machine
 `docker run -d --name my-sonarqube -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true -p 9000:9000 sonarqube:latest`
 sonarqube:lts-community
+* [Documentation](https://docs.sonarsource.com/sonarqube/latest/try-out-sonarqube/)
 
-[Documentation](https://docs.sonarsource.com/sonarqube/latest/try-out-sonarqube/)
+# Trivy
+
+* Install Trivy in Jenkins-dind
+```
+docker exec -it -u root my-jenkins /bin/bash
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.57.0
+```
+* [Documentation](https://aquasecurity.github.io/trivy/v0.57/getting-started/installation/)
