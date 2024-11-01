@@ -60,10 +60,9 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker', url: 'https://registry.hub.docker.com') {
-                    sh "docker tag nodeapp conandor/nodeapp:${env.BUILD_NUMBER}"
-                    sh "docker push conandor/nodeapp:${env.BUILD_NUMBER}"
-                }
+                docker.withRegistry('', 'dockerhub') {
+                        docker.push()
+                    }
             }
         }
 
