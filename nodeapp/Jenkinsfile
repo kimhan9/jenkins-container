@@ -3,7 +3,6 @@ pipeline {
     
     tools {
         nodejs 'node18'
-        docker 'docker'
     }
 
     environment {
@@ -60,7 +59,7 @@ pipeline {
 
         stage('Push Docker Image') {
             steps {
-                docker.withRegistry('', 'dockerhub') {
+                docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
                         docker.push()
                     }
             }
