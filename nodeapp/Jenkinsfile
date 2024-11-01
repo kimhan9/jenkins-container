@@ -8,7 +8,7 @@ pipeline {
     environment {
         SONAR_SCANNER_HOME = tool 'sonar-scanner'
         SONAR_PROJECT_KEY = 'nodeapp'
-        DOCKER_HUB_REPO = 'conandor/nodeapp'
+        DOCKER_IMAGE = "conandor/nodeapp:${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -27,7 +27,6 @@ pipeline {
 			}
 		}
 
-        /*
 		stage('SonarQube Analysis'){
 			steps {
                 withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
@@ -43,22 +42,26 @@ pipeline {
                 }
 			}
 		}
-        */
-
-        stage('Build Docker Image') {
+		
+        stage('Build Image') {
             steps {
-                script {
-                    docker.build("${DOCKER_HUB_REPO}:${env.BUILD_ID}")
+                dir('nodeapp') {
+                    sh "docker build -t ${DOCKER_IMAGE} ."
                 }
             }
         }
-
-        stage('Push Docker Image') {
+        
+        stage('Trivy Scan') {
             steps {
+                sh "trivy image --severity HIGH,CRITICAL --no-progress ${DOCKER_IMAGE}"
+            }
+        }
+        
+        stage('Docker Push'){
+            steps{
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-                        docker.push()
-                        docker.push('latest')
+                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                        sh "docker push ${DOCKER_IMAGE}"
                     }
                 }
             }
